@@ -1,0 +1,33 @@
+# Pure Exchange
+slater_x	SLATER
+becke_x	BECKE
+gill_x	GILL
+opt_x	OPTX
+pw91_x	PW91X
+pbe_x	PBEX
+
+# Pure Correlation
+vwn_c	VWN
+vwn3_c	VWN3
+vwn1rpa_c	VWN1RPA
+pz81_c	PZ81
+p86_c	P86
+lyp_c	LYP
+pw91_c	PW91C
+pbe_c	PBEC
+op_c	OP
+
+# Combination
+svwn	SVWN
+svwn1rpa	SVWN1RPA
+blyp	BLYP
+bop	BOP
+bp86	BP86
+gvwn	GVWN
+pbe	PBE
+
+# Hybrid GGA
+b3pw91	B3PW91
+b3lyp	B3LYP
+pbe0	PBE0
+b3p86v5	B3P86V5

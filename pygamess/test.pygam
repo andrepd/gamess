@@ -1,0 +1,9 @@
+Shell=rhf
+CalculationMode=go
+
+Basis=sto-3g/4-31g/cc_pVTZ
+
+%Coordinates
+H 1 0 0 0
+F 9 1 0 0
+%
