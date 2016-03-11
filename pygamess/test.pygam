@@ -1,9 +1,11 @@
-Shell=rhf
+Shell=uhf
 CalculationMode=go
-
-Basis=sto-3g/4-31g/cc_pVTZ
+Multiplicity=3
+Theory=mp2
+Basis=6-31g#++1d1p
 
 %Coordinates
-H 1 0 0 0
-F 9 1 0 0
+C 6 0 1 0
+H 1 -1 0 0
+H 1  1 0  0
 %

@@ -63,44 +63,30 @@ if test.DirectSCF():
 basislist=[]
 for i in range(len(test.Basis())):
     basis=" $BASIS "
-    if test.Basis()[i] in basis_list:
+    place=0
+    if "#" in test.Basis()[i]:
+	place=test.Basis()[i].find("#")
+    
+    if test.Basis()[i][:place] in basis_list and place!=0:
+	basis+=basis_list[test.Basis()[i][:place]]
+    elif test.Basis()[i] in basis_list and place==0:
 	basis+=basis_list[test.Basis()[i]]
     else:
 	sys.exit("That basis set does not exist in the database!")
-        
-    if test.DiffSP():
-	if test.DiffSP()=="yes":
+    
+    if "#" in test.Basis()[i]:
+	if test.Basis()[i].count("+")==1:
 	    basis+="DIFFSP=.TRUE. "
-	elif test.DiffSP()=="no":
-	    pass
-	else:
-	    sys.exit("Choose yes or no for diffuse SP shells!")
-    
-    if test.DiffS():
-	if test.DiffS()=="yes":
+	if test.Basis()[i].count("+")==2:
 	    basis+="DIFFS=.TRUE. "
-	elif test.DiffS()=="no":
-	    pass
-	else:
-	    sys.exit("Choose yes or no for diffuse S shells!")
-    
-    if test.NPFunc():
-	if test.NPFunc() in ["1","2","3"]:
-	    basis+="NPFUNC="+test.NPFunc()+" "
-	else:
-	    sys.exit("Choose beetween 1,2,3 P functions!")
-    
-    if test.NDFunc():
-	if test.NDFunc() in ["1","2","3"]:
-	    basis+="NDFUNC="+test.NDFunc()+" "
-	else:
-	    sys.exit("Choose beetween 1,2,3 D functions!")
-    
-    if test.NFFunc():
-	if test.NFFunc() in ["1","2","3"]:
-	    basis+="NFFUNC="+test.NFFunc()+" "
-	else:
-	    sys.exit("Choose beetween 1,2,3 F functions!")
+
+	if "p" in test.Basis()[i]:
+	    basis+="NPFUNC="+test.Basis()[i][test.Basis()[i].find("p")-1]+" "
+	if "d" in test.Basis()[i]:
+	    basis+="NDFUNC="+test.Basis()[i][test.Basis()[i].find("d")-1]+" "
+	if "f" in test.Basis()[i]:
+	    basis+="NFFUNC="+test.Basis()[i][test.Basis()[i].find("f")-1]+" "
+
     basis+="$END\n"
     basislist.append(basis)
 #------------------------------
@@ -119,7 +105,7 @@ else:
     sys.exit("That calculation mode does not exist!")
 
 if test.MoleculeCharge():
-    control+="ICHARGE="+test.MoleculeCharge()+" "
+    control+="ICHARG="+test.MoleculeCharge()+" "
 
 if test.Multiplicity():
     control+="MULT="+test.Multiplicity()+" "
@@ -202,6 +188,7 @@ if test.CalculationMode()=="go":
 		sys.exit("Choose a number of steps!")
     statopt+="$END\n"
 
+
 #$DATA
 data=" $DATA\ncomment\nC1\n"
 for i in test.Coordinates():
@@ -209,11 +196,11 @@ for i in test.Coordinates():
     data+="\n"
 data+=" $END\n"
 #---------------------------    
-os.system("./scripts/makefolder.sh " + sys.argv[2])
 for i in range(len(test.Basis())):
     f=open(sys.argv[2]+"_"+test.Basis()[i]+".inp","w")
     f.write(basislist[i])
     f.write(controllist[i])
+    f.write(" $SYSTEM TIMLIM=525600 MEMORY=524288000 MEMDDI=125 $END\n")
     if test.DirectSCF():
 	f.write(scf)
     if test.CalculationMode()=="hessian":
@@ -221,10 +208,11 @@ for i in range(len(test.Basis())):
     if test.NOptStep() or test.OptStepSize():
 	f.write(statopt)
     f.write(data)
-    os.system("mv "+sys.argv[2]+"_"+test.Basis()[i]+".inp "+sys.argv[2])
     f.close()
 
-os.system("cd "+sys.argv[2])
-os.system("../scripts/gamessrun.sh")
-os.system("../scripts/makefolder.sh res")
-os.system("mv *.log res")
+for i in range(len(test.Basis())):
+    os.system("python gamessrun.py "+sys.argv[2]+"_"+test.Basis()[i]+".inp")
+for i in range(len(test.Basis())):
+    os.system("python read.py "+sys.argv[2]+"_"+test.Basis()[i]\
+	    +".log energy cc geometry > "+sys.argv[2]+"_"+test.Basis()[i]+".res")
+os.system("rm *.inp")
